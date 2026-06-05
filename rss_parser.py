@@ -304,8 +304,7 @@ def fetch_rss_feeds():
                         local_img = "default.jpg"
                         
                     print("LOCAL IMG =", local_img)
-                    
-                    from app.services.ai_service import AIService
+                
                     
                     # Determine source language
                     src_lang = 'ru'
@@ -318,19 +317,19 @@ def fetch_rss_feeds():
                     if not cat_id:
                         cat_id = cats.get('cat_general')
                     
-                    ai_data = AIService.process_news(entry.get('title', 'No Title'), full_text, src_lang)
+                    title = entry.get('title', '')
 
                     news_item = News(
                         category_id=cat_id,
-                        title_ru=ai_data['title_ru'],
-                        title_kk=ai_data['title_kk'],
-                        title_en=ai_data['title_en'],
-                        content_ru=ai_data['content_ru'],
-                        content_kk=ai_data['content_kk'],
-                        content_en=ai_data['content_en'],
-                        summary_ru=ai_data['summary_ru'],
-                        summary_kk=ai_data['summary_kk'],
-                        summary_en=ai_data['summary_en'],
+                        title_ru=title,
+                        title_kk=title,
+                        title_en=title,
+                        content_ru=full_text,
+                        content_kk=full_text,
+                        content_en=full_text,
+                        summary_ru=full_text[:300],
+                        summary_kk=full_text[:300],
+                        summary_en=full_text[:300],
                         source_name=source_name,
                         original_url=link,
                         image_filename=local_img,
