@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: ali
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn run:app
+    runtime: python-3.11.9
