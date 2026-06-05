@@ -7,15 +7,14 @@ import os
 import uuid
 from werkzeug.utils import secure_filename
 from flask import redirect, url_for
-from rss_parser import fetch_rss_feeds
-
-@admin_bp.route('/update_rss')
-def update_rss():
-    fetch_rss_feeds()
-    return redirect(url_for('admin.dashboard'))
 
 admin_bp = Blueprint('admin', __name__)
 
+def run_rss_background():
+    thread = Thread(target=fetch_rss_feeds)
+    thread.daemon = True
+    thread.start()
+    
 # ================= LOGIN =================
 @admin_bp.route('/login', methods=['GET', 'POST'])
 def login():
@@ -185,10 +184,10 @@ def news_fetch_rss():
     from rss_parser import fetch_rss_feeds
 
     try:
-        fetch_rss_feeds()
-        flash('RSS ленты успешно обновлены!', 'success')
+        run_rss_background()   # 👈 ВОТ ТУТ ИЗМЕНЕНИЕ
+        flash('RSS запущен в фоне!', 'success')
     except Exception as e:
-        flash(f'Ошибка при обновлении RSS: {e}', 'error')
+        flash(f'Ошибка запуска RSS: {e}', 'error')
 
     return redirect(url_for('admin.news_list'))
 
