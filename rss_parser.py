@@ -254,7 +254,7 @@ def fetch_rss_feeds():
 
                 for entry in feed.entries:
 
-                    if processed >= 1:
+                    if processed >= 5:
                         break
 
                     link = entry.get('link')
