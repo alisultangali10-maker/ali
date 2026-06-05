@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container container-main">
+    
+    <!-- Top toolbar: Categories and Search -->
+    <div class="toolbar">
+        <div class="toolbar-top">
+            <div class="categories">
+                <a href="{{ url_for('main.index') }}" class="category-pill {% if not current_cat %}active{% endif %}">
+                    <i class="fas fa-layer-group"></i> <span>{{ _('all_news') }}</span>
+                </a>
+                {% for cat in categories %}
+                <a href="{{ url_for('main.index', category=cat.code) }}" class="category-pill {% if current_cat == cat.code %}active{% endif %}">
+                    <i class="fas 
+                        {% if 'politics' in cat.code %}fa-building-columns
+                        {% elif 'sport' in cat.code %}fa-volleyball
+                        {% elif 'economy' in cat.code %}fa-chart-line
+                        {% elif 'tech' in cat.code %}fa-microchip
+                        {% elif 'world' in cat.code %}fa-earth-americas
+                        {% elif 'auto' in cat.code %}fa-car
+                        {% elif 'culture' in cat.code %}fa-masks-theater
+                        {% else %}fa-hashtag{% endif %}"></i>
+                    <span>{{ _(cat.code) }}</span>
+                </a>
+                {% endfor %}
+            </div>
+            
+            <form action="{{ url_for('main.index') }}" method="GET" class="search-form">
+                <i class="fas fa-search search-icon" style="position: absolute; left: 20px; top: 50%; transform: translateY(-50%); color: var(--text-muted); pointer-events: none;"></i>
+                <input type="text" name="q" placeholder="{{ _('search_placeholder') }}" value="{{ request.args.get('q', '') }}" class="search-input" style="padding-left: 50px;">
+                <button type="submit" class="search-btn">{{ _('search') }}</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="main-layout-grid">
+        <div class="content-left">
+            {% if news_by_category %}
+                <!-- Sectional Newspaper Layout -->
+                {% for cat in categories %}
+                    {% if news_by_category.get(cat.code) %}
+                    <div class="category-section">
+                        <div class="section-header">
+                            <h2 class="section-title">
+                                <i class="fas 
+                                    {% if 'politics' in cat.code %}fa-building-columns
+                                    {% elif 'sport' in cat.code %}fa-volleyball
+                                    {% elif 'economy' in cat.code %}fa-chart-line
+                                    {% elif 'tech' in cat.code %}fa-microchip
+                                    {% elif 'world' in cat.code %}fa-earth-americas
+                                    {% elif 'auto' in cat.code %}fa-car
+                                    {% elif 'culture' in cat.code %}fa-masks-theater
+                                    {% else %}fa-hashtag{% endif %}"></i>
+                                {{ _(cat.code) }}
+                            </h2>
+                            <a href="{{ url_for('main.index', category=cat.code) }}" class="view-all">Смотреть все <i class="fas fa-angle-right"></i></a>
+                        </div>
+                        
+                        <div class="category-news-grid">
+                            {% for news in news_by_category[cat.code] %}
+                            <article class="news-card {% if loop.index == 1 %}large-card{% endif %}">
+                                {% if news.image_filename %}
+                                <div class="news-image">
+                                    <img src="{{ url_for('static', filename='images/uploads/' ~ news.image_filename) }}" alt="News image" loading="lazy">
+                                    <span class="news-category-badge small-badge">{{ _(news.category.code) }}</span>
+                                </div>
+                                {% else %}
+                                <div class="news-image placeholder"><i class="fas fa-image" style="font-size: 30px; color: #eee;"></i></div>
+                                {% endif %}
+                                <div class="news-content">
+                                    <h3 class="news-title">
+                                        <a href="{{ url_for('main.news_detail', news_id=news.id) }}">
+                                            {% if current_lang() == 'ru' %}{{ news.title_ru[:80] }}{% else %}{{ news.title_kk[:80] }}{% endif %}...
+                                        </a>
+                                    </h3>
+                                    <div class="news-footer">
+                                        <span class="news-date">{{ to_kz_time(news.created_at).strftime('%H:%M') }}</span>
+                                        <span class="news-source">{{ news.source_name }}</span>
+                                    </div>
+                                </div>
+                            </article>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                {% endfor %}
+            {% else %}
+                <!-- Standard Filtering/Search Layout -->
+                <div class="section-title">
+                    <h2>{% if current_cat %}{{ _(current_cat) }}{% else %}Результаты поиска{% endif %}</h2>
+                </div>
+                <div class="news-grid">
+                    {% for news in news_list %}
+                    <article class="news-card">
+                        {% if news.image_filename %}
+                        <div class="news-image">
+                            <img src="{{ url_for('static', filename='images/uploads/' ~ news.image_filename) }}" alt="News image" loading="lazy">
+                        </div>
+                        {% endif %}
+                        <div class="news-content">
+                            <h3 class="news-title">{{ news.title_ru }}</h3>
+                            <div class="news-footer">
+                                <span class="news-date">{{ news.created_at.strftime('%d.%m %H:%M') }}</span>
+                                <a href="{{ url_for('main.news_detail', news_id=news.id) }}" class="read-more-btn">Подробнее</a>
+                            </div>
+                        </div>
+                    </article>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+
+        <aside class="sidebar">
+            <div class="sidebar-widget">
+                <h3 class="widget-title">Последниее новости</h3>
+                <div class="trending-list">
+                    {% for p_news in news_list[:5] %}
+                    <a href="{{ url_for('main.news_detail', news_id=p_news.id) }}" class="trending-item">
+                        <span class="trending-rank">{{ loop.index }}</span>
+                        <div class="trending-info">
+                            <p>{% if current_lang() == 'ru' %}{{ p_news.title_ru[:60] }}{% else %}{{ p_news.title_kk[:60] }}{% endif %}...</p>
+                        </div>
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="sidebar-widget promo-widget">
+                <h3>Подписка</h3>
+                <p>Получайте уведомления о самых важных событиях Казахстана.</p>
+                <div class="subscribe-row">
+                    <input type="email" placeholder="Email...">
+                    <button>OK</button>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container single-news-container">
+    <div class="single-news-card">
+        <header class="single-header">
+            <span class="category-pill active" style="display:inline-flex; margin-bottom: 20px;">
+                {{ _(news.category.code) }}
+            </span>
+            <h1 class="single-title">
+                {% if current_lang() == 'kk' %}{{ news.title_kk }}
+                {% elif current_lang() == 'ru' %}{{ news.title_ru }}
+                {% else %}{{ news.title_en }}
+                {% endif %}
+            </h1>
+            <div class="single-meta">
+                <span><i class="far fa-calendar-alt"></i> {{ to_kz_time(news.created_at).strftime('%d.%m.%Y %H:%M') }}</span>
+                <span><i class="far fa-eye"></i> {{ news.views }} {{ _('views') }}</span>
+            </div>
+        </header>
+
+        {% if news.image_filename %}
+        <div class="featured-img-wrapper">
+            <img src="{{ url_for('static', filename='images/uploads/' ~ news.image_filename) }}" alt="News image">
+        </div>
+        {% endif %}
+
+        <!-- AI Highlights Block -->
+        <div class="ai-highlights">
+            <div class="ai-badge">
+                <i class="fas fa-robot"></i> AI Highlights
+            </div>
+            <div class="ai-summary">
+                {% if current_lang() == 'kk' %}{{ news.summary_kk or 'Аударма қолжетімсіз.' }}
+                {% elif current_lang() == 'ru' %}{{ news.summary_ru or 'Никаких подробностей нет.' }}
+                {% else %}{{ news.summary_en or 'No details available.' }}
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="article-content" id="newsBody">
+            {% if current_lang() == 'kk' %}{{ news.content_kk | safe }}
+            {% elif current_lang() == 'ru' %}{{ news.content_ru | safe }}
+            {% else %}{{ news.content_en | safe }}
+            {% endif %}
+        </div>
+        
+        {% if news.original_url %}
+        <div style="margin-top: 20px; font-size: 0.9em; color: #666;">
+            Источник: <a href="{{ news.original_url }}" target="_blank" style="color: var(--primary);">{{ news.source_name }}</a>
+        </div>
+        {% endif %}
+
+        <div class="back-link" style="margin-top: 40px; border-top: 1px solid #eee; padding-top: 20px;">
+            <a href="{{ url_for('main.index') }}" class="read-more-btn" style="font-size: 16px;">
+                <i class="fas fa-arrow-left"></i> {{ _('home') }}
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

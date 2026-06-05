@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="{{ current_lang() }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ _('site_name') }}</title>
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="glow-bg"></div>
+    <header class="header">
+        <div class="ticker-wrap">
+            <div class="ticker-label">{{ _('breaking_news') or 'В ОГНЕ СОБЫТИЙ' }}</div>
+            <div class="ticker">
+                <div class="ticker__item">Свежие новости со всего Казахстана в реальном времени...</div>
+                <div class="ticker__item">Тенге: актуальные курсы и аналитика...</div>
+                <div class="ticker__item">События в Астане и Алматы сегодня...</div>
+            </div>
+        </div>
+        <div class="container header-container">
+            <div class="logo">
+                <a href="{{ url_for('main.index') }}">
+                    <span class="logo-icon"><i class="fas fa-layer-group"></i></span>
+                    <span class="logo-text">{{ _('site_name') }}</span>
+                </a>
+            </div>
+            
+            <nav class="main-nav">
+                <a href="{{ url_for('main.index') }}" class="nav-link">
+                    <i class="fas fa-house"></i> <span>{{ _('home') }}</span>
+                </a>
+            </nav>
+            
+            <div class="header-actions">
+                <div class="lang-switcher">
+                    <button class="lang-btn" id="langBtn">
+                        <i class="fas fa-globe"></i>
+                        <span>{{ current_lang() | upper }}</span>
+                    </button>
+                    <div class="lang-dropdown" id="langDropdown">
+                        <a href="{{ url_for('main.set_lang', lang_code='kk') }}" class="{% if current_lang() == 'kk' %}active{% endif %}">Қазақша</a>
+                        <a href="{{ url_for('main.set_lang', lang_code='ru') }}" class="{% if current_lang() == 'ru' %}active{% endif %}">Русский</a>
+                        <a href="{{ url_for('main.set_lang', lang_code='en') }}" class="{% if current_lang() == 'en' %}active{% endif %}">English</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer">
+        <div class="container footer-content">
+            <div class="footer-brand">
+                <div class="logo">
+                    <a href="{{ url_for('main.index') }}">
+                        <span class="logo-icon"><i class="fas fa-layer-group"></i></span>
+                        <span class="logo-text">{{ _('site_name') }}</span>
+                    </a>
+                </div>
+                <p>&copy; 2026 {{ _('site_name') }}. Все права защищены.</p>
+            </div>
+            
+            <div class="footer-links">
+                <div class="socials">
+                    <a href="#" title="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="#" title="Telegram"><i class="fab fa-telegram"></i></a>
+                </div>
+                <a href="{{ url_for('admin.login') }}" class="admin-login-link">
+                    <i class="fas fa-user-shield"></i> {{ _('login_admin') }}
+                </a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script>
+        // Language dropdown toggle
+        const langBtn = document.getElementById('langBtn');
+        const langDropdown = document.getElementById('langDropdown');
+        if (langBtn && langDropdown) {
+            langBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                langDropdown.classList.toggle('show');
+            });
+            document.addEventListener('click', () => langDropdown.classList.remove('show'));
+        }
+
+        // Set current language globally for JS
+        window.CURRENT_LANG = "{{ current_lang() }}";
+        window.READ_MORE_TEXT = "{{ _('read_more') }}";
+    </script>
+</body>
+</html>

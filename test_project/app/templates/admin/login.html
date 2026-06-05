@@ -1,0 +1,98 @@
+{% extends "admin/base.html" %}
+
+{% block login %}
+<div style="
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+    background:#000;
+    font-family:Inter, sans-serif;
+">
+
+    <div style="
+        background:#0f0f0f;
+        padding:2.5rem;
+        border-radius:14px;
+        width:100%;
+        max-width:420px;
+        box-shadow:0 20px 60px rgba(0,0,0,0.6);
+        border:1px solid #222;
+    ">
+
+        <h2 style="
+            text-align:center;
+            color:#FFC82E;
+            margin-bottom:1.5rem;
+            font-weight:800;
+            letter-spacing:1px;
+        ">
+            Вход в Админку
+        </h2>
+
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            <ul style="
+                color:#ff4d4d;
+                padding:0;
+                list-style:none;
+                text-align:center;
+                margin-bottom:1rem;
+                font-weight:600;
+            ">
+            {% for message in messages %}
+              <li>{{ message }}</li>
+            {% endfor %}
+            </ul>
+          {% endif %}
+        {% endwith %}
+
+        <form method="POST" style="
+            display:flex;
+            flex-direction:column;
+            gap:1rem;
+        ">
+
+            <div>
+                <label style="color:#ddd; font-size:14px;">Логин</label>
+                <input type="text" name="username" required style="
+                    width:100%;
+                    padding:12px;
+                    border-radius:8px;
+                    border:1px solid #333;
+                    background:#111;
+                    color:#fff;
+                    outline:none;
+                ">
+            </div>
+
+            <div>
+                <label style="color:#ddd; font-size:14px;">Пароль</label>
+                <input type="password" name="password" required style="
+                    width:100%;
+                    padding:12px;
+                    border-radius:8px;
+                    border:1px solid #333;
+                    background:#111;
+                    color:#fff;
+                    outline:none;
+                ">
+            </div>
+
+            <button type="submit" style="
+                background:#FFC82E;
+                color:#000;
+                border:none;
+                padding:12px;
+                font-weight:800;
+                border-radius:8px;
+                cursor:pointer;
+                transition:0.2s;
+            ">
+                Войти
+            </button>
+
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+
+<h1>База данных новостей</h1>
+
+<table class="admin-table">
+    <tr>
+        <th>ID</th>
+        <th>Заголовок</th>
+        <th>Дата</th>
+    </tr>
+
+```
+{% for item in news %}
+<tr>
+    <td>{{ item.id }}</td>
+    <td>{{ item.title_ru }}</td>
+    <td>{{ item.created_at }}</td>
+</tr>
+{% endfor %}
+```
+
+</table>
+
+{% endblock %}

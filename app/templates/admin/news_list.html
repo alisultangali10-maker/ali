@@ -1,0 +1,112 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+
+<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+    
+    <h1 style="color:#FFC82E;">Новости</h1>
+    <a href="{{ url_for('admin.news_add') }}"
+       style="
+            background:#FFC82E;
+            color:#000;
+            padding:10px 15px;
+            border-radius:6px;
+            text-decoration:none;
+            font-weight:bold;
+       ">
+        ➕ Добавить
+    </a>
+    
+<a href="{{ url_for('admin.news_fetch_rss') }}"
+   style="
+        background:#00c853;
+        color:#000;
+        padding:10px 15px;
+        border-radius:6px;
+        text-decoration:none;
+        font-weight:bold;
+        margin-left:10px;
+   ">
+    🔄 Обновить RSS
+</a>
+</div>
+
+<table style="
+    width:100%;
+    border-collapse:collapse;
+    background:#111;
+    color:#fff;
+">
+
+    <tr style="
+        background:#1a1a1a;
+        color:#FFC82E;
+    ">
+        <th style="padding:12px;">ID</th>
+        <th style="padding:12px;">Заголовок</th>
+        <th style="padding:12px;">Категория</th>
+        <th style="padding:12px;">Дата</th>
+        <th style="padding:12px;">Картинка</th>
+        <th style="padding:12px;">Действия</th>
+    </tr>
+
+    {% for news in news_items %}
+    <tr style="border-bottom:1px solid #222;">
+
+        <td style="padding:12px;">
+            {{ news.id }}
+        </td>
+
+        <td style="padding:12px;">
+            {{ news.title_ru }}
+        </td>
+
+        <td style="padding:12px;">
+            {{ news.category.code if news.category else '' }}
+        </td>
+
+        <td style="padding:12px;">
+            {{ news.created_at.strftime('%d.%m.%Y') if news.created_at else '' }}
+        </td>
+        <td style="padding:12px;">
+            {% if news.image_filename %}
+                <img src="{{ url_for('static', filename='images/uploads/' ~ news.image_filename) }}" width="100">
+            {% else %}
+                <img src="{{ url_for('static', filename='images/default.jpg') }}" width="100">
+            {% endif %}
+        
+        </td>
+
+        <td style="padding:12px;">
+
+            <!-- EDIT -->
+
+            <a href="{{ url_for('admin.news_edit', news_id=news.id) }}"
+               style="
+                    color:#FFC82E;
+                    text-decoration:none;
+                    margin-right:15px;
+                    font-size:20px;
+               ">
+                ✏
+            </a>
+
+            <!-- DELETE -->
+
+            <a href="{{ url_for('admin.news_delete', news_id=news.id) }}"
+               style="
+                    color:#ff3b3b;
+                    text-decoration:none;
+                    font-size:20px;
+               ">
+                🗑
+            </a>
+
+        </td>
+
+    </tr>
+    {% endfor %}
+
+</table>
+
+{% endblock %}

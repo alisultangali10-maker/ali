@@ -1,0 +1,96 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+
+<style>
+.dashboard-cards{
+    display:flex;
+    gap:20px;
+    flex-wrap:wrap;
+}
+
+.dashboard-card{
+    flex:1;
+    min-width:250px;
+    padding:2rem;
+    border-radius:12px;
+    text-align:center;
+}
+
+.dashboard-card h3{
+    margin-bottom:10px;
+}
+
+.dashboard-card p{
+    font-size:3rem;
+    font-weight:bold;
+    margin:10px 0;
+}
+
+.quick-action{
+    display:inline-block;
+    background:#ef8700;
+    color:white;
+    padding:12px 22px;
+    text-decoration:none;
+    border-radius:8px;
+    margin-top:10px;
+    font-weight:700;
+}
+
+@media (max-width:768px){
+
+    .dashboard-cards{
+        flex-direction:column;
+    }
+
+    .dashboard-card{
+        width:100%;
+        min-width:auto;
+        box-sizing:border-box;
+    }
+
+    .dashboard-card p{
+        font-size:2.2rem;
+    }
+
+    .quick-action{
+        width:100%;
+        text-align:center;
+        box-sizing:border-box;
+    }
+}
+</style>
+
+<div class="admin-header">
+    <h1>Дашборд</h1>
+</div>
+
+<div class="dashboard-cards">
+
+    <div class="dashboard-card" style="background:#000;color:white;">
+        <h3>Всего новостей</h3>
+        <p>{{ total_news }}</p>
+    </div>
+
+    <div class="dashboard-card" style="background:#FFC82E;color:#333;">
+        <h3>Просмотры</h3>
+        <p>{{ total_views }}</p>
+    </div>
+
+    <div class="dashboard-card" style="background:#4b4b4b;color:white;">
+        <h3>Категории</h3>
+        <p>{{ categories_count }}</p>
+    </div>
+
+</div>
+
+<div style="margin-top:3rem;">
+    <h3>Быстрые действия</h3>
+
+    <a href="{{ url_for('admin.news_add') }}" class="quick-action">
+        + Добавить новость
+    </a>
+</div>
+
+{% endblock %}
