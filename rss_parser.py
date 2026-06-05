@@ -28,7 +28,8 @@ CATEGORY_KEYWORDS = {
     'cat_tech': ['it', 'технологии', 'смартфон', 'интернет', 'apple', 'google', 'разработка', 'связь', 'цифровизация', 'искусственный интеллект', 'ai', 'samsung', 'microsoft', 'software'],
     'cat_auto': ['авто', 'машина', 'двигатель', 'тесла', 'bmw', 'mercedes', 'toyota', 'электромобиль', 'гибрид', 'car', 'vehicle', 'automotive', 'tesla', 'ford'],
     'cat_world': ['мир', 'оон', 'сша', 'европа', 'китай', 'россия', 'израиль', 'украина', 'геополитика', 'world', 'international', 'global'],
-    'cat_culture': ['культура', 'кино', 'музыка', 'фестиваль', 'театр', 'выставка', 'искусство', 'звезды', 'шоу-бизнес', 'culture', 'entertainment', 'music', 'cinema']
+    'cat_culture': ['культура', 'кино', 'музыка', 'фестиваль', 'театр', 'выставка', 'искусство', 'звезды', 'шоу-бизнес', 'culture', 'entertainment', 'music', 'cinema'],
+    'cat_general': ['news', 'update', 'новости']
 }
 
 def determine_category(title, content, source_name):
@@ -227,8 +228,9 @@ def fetch_rss_feeds():
     print(f"== [{datetime.now()}] GLOBAL NEWS UPDATE ==")
     app = create_app()
     with app.app_context():
-        # RUN init_db logic manually if needed (adding new categories if missing)
-        from init_db import create_app as init_app_func # just to be safe if categories aren't in DB
+        processed = 0
+        total_added = 0
+        # RUN init_db logic manually if needed (adding new categories if missing
         # However, we assume user runs init_db.py or we do it here
         for c_code in CATEGORY_KEYWORDS.keys():
             if not Category.query.filter_by(code=c_code).first():
@@ -238,7 +240,6 @@ def fetch_rss_feeds():
         cats = {c.code: c.id for c in Category.query.all()}
         upload_folder = app.config['UPLOAD_FOLDER']
         print("UPLOAD_FOLDER =", upload_folder)
-        total_added = 0
         
         for source_name, url in RSS_FEEDS.items():
             print(f"> SOURCE: {source_name}")
@@ -252,12 +253,13 @@ def fetch_rss_feeds():
                     print("ERROR:", feed.bozo_exception)
 
                 for entry in feed.entries:
+
                     if processed >= 8:
-                       break
+                        break
 
                     link = entry.get('link')
-
-                    print("LINK:", link)
+                    if not link:
+                        continue 
 
                     if News.query.filter_by(original_url=link).first():
                         print("SKIP EXISTS")
@@ -311,7 +313,10 @@ def fetch_rss_feeds():
                         src_lang = 'en'
                     
                     cat_code = determine_category(entry.get('title', ''), full_text, source_name)
-                    cat_id = cats.get(cat_code, cats.get('cat_general'))
+                    cat_id = cats.get(cat_code)
+
+                    if not cat_id:
+                        cat_id = cats.get('cat_general')
                     
                     ai_data = AIService.process_news(entry.get('title', 'No Title'), full_text, src_lang)
 
