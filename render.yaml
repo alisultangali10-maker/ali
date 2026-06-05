@@ -2,6 +2,7 @@ services:
   - type: web
     name: ali
     env: python
+    plan: free
     buildCommand: pip install -r requirements.txt
     startCommand: gunicorn run:app
-    runtime: python-3.11.9
+    runtime: python3.11
