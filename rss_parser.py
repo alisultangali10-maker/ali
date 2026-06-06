@@ -92,20 +92,20 @@ def download_image(image_url, upload_folder):
                 print("IMAGE URL =", image_url)
                 
                # проверка успешного ответа
-               if response.status_code != 200:
+                if response.status_code != 200:
                     continue
 
-               content_type = response.headers.get('content-type', '').lower()
+                content_type = response.headers.get('content-type', '').lower()
             
                # не картинка → пропускаем
-               if 'image' not in content_type:
+                if 'image' not in content_type:
                    continue
 
                 # слишком маленькое = мусор (HTML заглушка)
-               if len(response.content) < 5000:
-                   continue
+                if len(response.content) < 5000:
+                    continue
 
-               break
+                break
 
             except Exception as e:
                 print(f"[RETRY {i+1}] {e}")
