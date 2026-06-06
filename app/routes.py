@@ -7,50 +7,78 @@ main = Blueprint('main', __name__)
 
 @main.route('/')
 def index():
-    # Make sure lang is set
+    
+    if not db.engine.dialect.has_table(db.engine, "news"):
+        return render_template(
+            'index.html',
+            news_list=[],
+            categories=[],
+            current_cat=None,
+            news_by_category={}
+        )
+    
     if 'lang' not in session:
         session['lang'] = 'ru'
-        
+
     category_code = request.args.get('category')
     search_query = request.args.get('q')
-    
-    query = News.query.order_by(News.created_at.desc())
-    
-    if category_code:
-        cat = Category.query.filter_by(code=category_code).first()
-        if cat:
-            query = query.filter_by(category_id=cat.id)
-            
-    if search_query:
-        # Search in all language titles and contents
-        term = f"%{search_query}%"
-        query = query.filter(
-            or_(
-                News.title_ru.ilike(term),
-                News.title_kk.ilike(term),
-                News.title_en.ilike(term),
-                News.content_ru.ilike(term),
-                News.content_en.ilike(term),
-                News.content_kk.ilike(term)
-            )
-        )
-        
-    news_list = query.all()
-    categories = Category.query.all()
-    
-    # If we are on the main landing page (no filter, no search), 
-    # we want to provide news grouped by category for the "newspaper" layout.
+
+    news_list = []
+    categories = []
     news_by_category = {}
+
+    # ---------------- NEWS ----------------
+    try:
+        query = News.query.order_by(News.created_at.desc())
+
+        if category_code:
+            cat = Category.query.filter_by(code=category_code).first()
+            if cat:
+                query = query.filter_by(category_id=cat.id)
+
+        if search_query:
+            term = f"%{search_query}%"
+            query = query.filter(
+                or_(
+                    News.title_ru.ilike(term),
+                    News.title_kk.ilike(term),
+                    News.title_en.ilike(term),
+                    News.content_ru.ilike(term),
+                    News.content_en.ilike(term),
+                    News.content_kk.ilike(term)
+                )
+            )
+
+        news_list = query.all()
+
+    except Exception as e:
+        print("News query error:", e)
+        news_list = []
+
+    # ---------------- CATEGORIES ----------------
+    try:
+        categories = Category.query.all()
+    except Exception as e:
+        print("Category error:", e)
+        categories = []
+
+    # ---------------- GROUPED NEWS ----------------
     if not category_code and not search_query:
         for cat in categories:
-            # Get latest 4 news for each category
-            news_by_category[cat.code] = News.query.filter_by(category_id=cat.id).order_by(News.created_at.desc()).limit(4).all()
-    
-    return render_template('index.html', 
-                          news_list=news_list, 
-                          categories=categories, 
-                          current_cat=category_code,
-                          news_by_category=news_by_category)
+            try:
+                news_by_category[cat.code] = News.query.filter_by(
+                    category_id=cat.id
+                ).order_by(News.created_at.desc()).limit(4).all()
+            except Exception as e:
+                print("Grouped news error:", e)
+
+    return render_template(
+        'index.html',
+        news_list=news_list,
+        categories=categories,
+        current_cat=category_code,
+        news_by_category=news_by_category
+    )
 
 @main.route('/news/<int:news_id>')
 def news_detail(news_id):
