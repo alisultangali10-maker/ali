@@ -76,48 +76,49 @@ def download_image(image_url, upload_folder):
         # 🔥 RETRY (ВАЖНО)
         response = None
 
+        
         for i in range(3):
-            try:
-                response = session.get(
-                    image_url,
-                    headers=headers,
-                    timeout=20,
-                    verify=False,
-                    allow_redirects=True
-                )
+    try:
+        response = session.get(
+            image_url,
+            headers=headers,
+            timeout=20,
+            verify=False,
+            allow_redirects=True
+        )
 
-                print("DOWNLOADING:", image_url)
-                print("STATUS =", response.status_code)
-                print("CONTENT-TYPE =", response.headers.get("content-type"))
-                print("IMAGE URL =", image_url)
-                
-               # проверка успешного ответа
-                if response.status_code != 200:
-                    continue
+        print("DOWNLOADING:", image_url)
+        print("STATUS =", response.status_code)
+        print("CONTENT-TYPE =", response.headers.get("content-type"))
 
-                content_type = response.headers.get('content-type', '').lower()
-            
-               # не картинка → пропускаем
-                if 'image' not in content_type:
-                   continue
+        content_type = response.headers.get('content-type', '').lower()
 
-                # слишком маленькое = мусор (HTML заглушка)
-                if len(response.content) < 5000:
-                    continue
+        # ❌ неудачные ответы
+        if response.status_code != 200:
+            continue
 
-                break
+        content_type = (response.headers.get('content-type') or '').lower()
 
-            except Exception as e:
-                print(f"[RETRY {i+1}] {e}")
-                response = None
+        if 'text/html' in content_type:
+            continue
+
+        if 'image' not in content_type:
+            continue
+
+        if len(response.content) < 5000:
+            continue
+
+        # ✅ всё ок — выходим
+        break
+
+        
+    except Exception as e:
+        print(f"[RETRY {i+1}] {e}")
+        response = None
 
 # если ничего не скачалось
         if not response:
             return None
-
-        content_type = response.headers.get('content-type', '').lower()
-        if 'text/html' in content_type:
-            continue
 
         if not content_type.startswith('image'):
             return None
