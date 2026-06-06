@@ -8,15 +8,6 @@ main = Blueprint('main', __name__)
 @main.route('/')
 def index():
     
-    if not db.engine.dialect.has_table(db.engine, "news"):
-        return render_template(
-            'index.html',
-            news_list=[],
-            categories=[],
-            current_cat=None,
-            news_by_category={}
-        )
-    
     if 'lang' not in session:
         session['lang'] = 'ru'
 
