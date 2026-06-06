@@ -90,17 +90,22 @@ def download_image(image_url, upload_folder):
                 print("STATUS =", response.status_code)
                 print("CONTENT-TYPE =", response.headers.get("content-type"))
                 print("IMAGE URL =", image_url)
-        # проверка успешного ответа
-                if response.status_code == 200:
-                    print("SUCCESS:", image_url)
-                    content_type = response.headers.get('content-type', '').lower()
                 
-                
-            # если это реально картинка — выходим из цикла
-                    if 'image' in content_type:
-                        break
-                    else:
-                        response = None
+               # проверка успешного ответа
+               if response.status_code != 200:
+                    continue
+
+               content_type = response.headers.get('content-type', '').lower()
+            
+               # не картинка → пропускаем
+               if 'image' not in content_type:
+                   continue
+
+                # слишком маленькое = мусор (HTML заглушка)
+               if len(response.content) < 5000:
+                   continue
+
+               break
 
             except Exception as e:
                 print(f"[RETRY {i+1}] {e}")
@@ -126,6 +131,14 @@ def download_image(image_url, upload_folder):
 
         filename = f"news_{uuid.uuid4().hex[:12]}.{ext}"
         filepath = os.path.join(upload_folder, filename)
+        
+        from PIL import Image
+        import io
+
+        try:
+            Image.open(io.BytesIO(response.content)).verify()
+        except Exception:
+            return None
 
         with open(filepath, 'wb') as f:
             f.write(response.content)
@@ -280,10 +293,12 @@ def fetch_rss_feeds():
 
                     image_url = None
 
-                    if web_image:
-                        image_url = web_image
-                    elif rss_image:
-                        image_url = rss_image
+                   image_url = web_image or rss_image
+
+                   if not image_url:
+                       media = entry.get('media_thumbnail')
+                       if isinstance(media, list) and len(media) > 0:
+                           image_url = media[0].get('url')
                     else:
                         media = entry.get('media_thumbnail')
                         if isinstance(media, list) and len(media) > 0:
@@ -294,14 +309,11 @@ def fetch_rss_feeds():
                     print("IMAGE:", image_url)
 
                     if not image_url:
-                        local_img = "default.jpg"
+                        local_img = None
                     else:
                         local_img = download_image(image_url, upload_folder)
                         
                     print("DOWNLOAD RESULT =", local_img)
-
-                    if not local_img:
-                        local_img = "default.jpg"
                         
                     print("LOCAL IMG =", local_img)
                 
