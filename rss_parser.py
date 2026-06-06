@@ -78,14 +78,14 @@ def download_image(image_url, upload_folder):
 
         
         for i in range(3):
-    try:
-        response = session.get(
-            image_url,
-            headers=headers,
-            timeout=20,
-            verify=False,
-            allow_redirects=True
-        )
+            try:
+                response = session.get(
+                    image_url,
+                    headers=headers,
+                    timeout=20,
+                    verify=False,
+                    allow_redirects=True
+            )
 
         print("DOWNLOADING:", image_url)
         print("STATUS =", response.status_code)
@@ -112,9 +112,9 @@ def download_image(image_url, upload_folder):
         break
 
         
-    except Exception as e:
-        print(f"[RETRY {i+1}] {e}")
-        response = None
+            except Exception as e:
+                print(f"[RETRY {i+1}] {e}")
+                response = None
 
 # если ничего не скачалось
         if not response:
