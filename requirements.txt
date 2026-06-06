@@ -9,3 +9,4 @@ requests==2.31.0
 beautifulsoup4==4.12.2
 gunicorn
 deep-translator
+psycopg2-binary
