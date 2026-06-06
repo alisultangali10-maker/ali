@@ -85,39 +85,41 @@ def download_image(image_url, upload_folder):
                     timeout=20,
                     verify=False,
                     allow_redirects=True
-            )
+                )
 
-            print("DOWNLOADING:", image_url)
-            print("STATUS =", response.status_code)
-            print("CONTENT-TYPE =", response.headers.get("content-type"))
+                print("DOWNLOADING:", image_url)
+                print("STATUS =", response.status_code)
+                print("CONTENT-TYPE =", response.headers.get("content-type"))
 
-            content_type = response.headers.get('content-type', '').lower()
+                content_type = response.headers.get('content-type', '').lower()
 
-            # ❌ неудачные ответы
-            if response.status_code != 200:
-            continue
+                # ❌ неудачные ответы
+                if response.status_code != 200:
+                    continue
 
-            content_type = (response.headers.get('content-type') or '').lower()
+                content_type = (response.headers.get('content-type') or '').lower()
 
-            if 'text/html' in content_type:
-                continue
+                if 'text/html' in content_type:
+                    continue
 
-            if 'image' not in content_type:
-                continue
+                if 'image' not in content_type:
+                    continue
 
-            if len(response.content) < 5000:
-                continue
+                if len(response.content) < 5000:
+                    continue
 
-            # ✅ всё ок — выходим
-            break
+                # ✅ всё ок — выходим
+                break
 
-        except Exception as e:
-            print(f"[RETRY {i+1}] {e}")
-            response = None
+            except Exception as e:
+                print(f"[RETRY {i+1}] {e}")
+                response = None
 
-# если ничего не скачалось
+        # если ничего не скачалось
         if not response:
             return None
+
+        content_type = response.headers.get('content-type', '').lower()
 
         if not content_type.startswith('image'):
             return None
@@ -133,13 +135,13 @@ def download_image(image_url, upload_folder):
 
         filename = f"news_{uuid.uuid4().hex[:12]}.{ext}"
         filepath = os.path.join(upload_folder, filename)
-        
+
         from PIL import Image
         import io
 
         try:
             img = Image.open(io.BytesIO(response.content))
-            img.load()
+            img.verify()
         except Exception:
             return None
 
