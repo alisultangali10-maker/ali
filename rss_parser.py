@@ -281,6 +281,24 @@ def fetch_rss_feeds():
                     print(f"  * Fetching: {entry.get('title', '')[:40]}...")
                     full_text, web_image = extract_full_content(link, source_name)
                     rss_image = get_image_from_rss_entry(entry)
+                    
+                    image_url = None
+
+                    # 1) scraper (самый надёжный)
+                    if web_image and web_image.startswith("http"):
+                        image_url = web_image
+
+                    # 2) rss
+                    elif rss_image and rss_image.startswith("http"):
+                        image_url = rss_image
+
+                    #3) media fallback
+                    else:
+                        media = entry.get('media_thumbnail')
+                        if isinstance(media, list) and len(media) > 0:
+                            candidate = media[0].get('url')
+                            if candidate and candidate.startswith("http"):
+                                image_url = candidate
 
                     print("RSS IMAGE:", rss_image)
                     print("IMAGE FROM SCRAPER:", web_image)
@@ -291,18 +309,7 @@ def fetch_rss_feeds():
                         full_text = entry.get('summary', '') or entry.get('description', '')
                         full_text = BeautifulSoup(full_text, "html.parser").text
 
-                    image_url = None
-
-                    image_url = web_image or rss_image
-
-                    if not image_url:
-                       media = entry.get('media_thumbnail')
-                       if isinstance(media, list) and len(media) > 0:
-                           image_url = media[0].get('url')
-                    else:
-                        media = entry.get('media_thumbnail')
-                        if isinstance(media, list) and len(media) > 0:
-                            image_url = media[0].get('url')
+    
 
 
                     print("FINAL IMAGE URL =", image_url)
