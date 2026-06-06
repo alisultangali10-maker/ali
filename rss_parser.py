@@ -293,9 +293,9 @@ def fetch_rss_feeds():
 
                     image_url = None
 
-                   image_url = web_image or rss_image
+                    image_url = web_image or rss_image
 
-                   if not image_url:
+                    if not image_url:
                        media = entry.get('media_thumbnail')
                        if isinstance(media, list) and len(media) > 0:
                            image_url = media[0].get('url')
