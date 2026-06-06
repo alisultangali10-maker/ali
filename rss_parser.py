@@ -116,6 +116,8 @@ def download_image(image_url, upload_folder):
             return None
 
         content_type = response.headers.get('content-type', '').lower()
+        if 'text/html' in content_type:
+            continue
 
         if not content_type.startswith('image'):
             return None
@@ -136,9 +138,10 @@ def download_image(image_url, upload_folder):
         import io
 
         try:
-            Image.open(io.BytesIO(response.content)).verify()
+            img = Image.open(io.BytesIO(response.content))
+            img.load()
         except Exception:
-            return None
+            return Nonee
 
         with open(filepath, 'wb') as f:
             f.write(response.content)
@@ -163,24 +166,29 @@ def extract_full_content(url, source_name):
         soup = BeautifulSoup(response.text, "html.parser")
 
         content = ""
-        image_url = None
 
-        # og:image
+        # ---------------- IMAGE EXTRACTION ----------------
+        image_candidates = []
+
         meta = soup.find("meta", property="og:image")
         if meta:
-            image_url = meta.get("content")
+            image_candidates.append(meta.get("content"))
 
-        # twitter:image
-        if not image_url:
-            meta = soup.find("meta", attrs={"name": "twitter:image"})
-            if meta:
-                image_url = meta.get("content")
+        meta = soup.find("meta", attrs={"name": "twitter:image"})
+        if meta:
+            image_candidates.append(meta.get("content"))
 
-        # og:image:url
-        if not image_url:
-            meta = soup.find("meta", property="og:image:url")
-            if meta:
-                image_url = meta.get("content")
+        meta = soup.find("meta", property="og:image:url")
+        if meta:
+            image_candidates.append(meta.get("content"))
+
+        image_candidates = [
+            img for img in image_candidates
+            if img and img.startswith("http")
+        ]
+
+        image_url = image_candidates[0] if image_candidates else None
+        # --------------------------------------------------
 
         content_selectors = [
             ".content_main_text",
@@ -205,37 +213,17 @@ def extract_full_content(url, source_name):
 
         if content_div:
 
-            if not image_url:
-
-                img = content_div.find("img")
-
-                if img:
-
-                    image_url = (
-                        img.get("src")
-                        or img.get("data-src")
-                        or img.get("data-original")
-                        or img.get("data-lazy-src")
-                    )
-
-                    if not image_url and img.get("srcset"):
-                        image_url = img.get("srcset").split(",")[0].split(" ")[0]
-
-            for tag in content_div(
-                ["script", "style", "iframe", "aside", "nav"]
-            ):
+            for tag in content_div(["script", "style", "iframe", "aside", "nav"]):
                 tag.decompose()
 
-            content = content_div.get_text(
-                separator="\n",
-                strip=True
-            )
+            content = content_div.get_text(separator="\n", strip=True)
 
         return content, image_url
 
     except Exception as e:
         print("[SCRAPER ERROR]", e)
         return "", None
+
 
 def fetch_rss_feeds():
     print(f"== [{datetime.now()}] GLOBAL NEWS UPDATE ==")
@@ -284,21 +272,19 @@ def fetch_rss_feeds():
                     
                     image_url = None
 
-                    # 1) scraper (самый надёжный)
-                    if web_image and web_image.startswith("http"):
-                        image_url = web_image
+                    candidates = [
+                        web_image,
+                        rss_image,
+                    ]
 
-                    # 2) rss
-                    elif rss_image and rss_image.startswith("http"):
-                        image_url = rss_image
+                    media = entry.get('media_thumbnail')
+                    if isinstance(media, list) and media:
+                        candidates.append(media[0].get('url'))
 
-                    #3) media fallback
-                    else:
-                        media = entry.get('media_thumbnail')
-                        if isinstance(media, list) and len(media) > 0:
-                            candidate = media[0].get('url')
-                            if candidate and candidate.startswith("http"):
-                                image_url = candidate
+                    for url in candidates:
+                        if url and isinstance(url, str) and url.startswith("http"):
+                            image_url = url
+                            break
 
                     print("RSS IMAGE:", rss_image)
                     print("IMAGE FROM SCRAPER:", web_image)
