@@ -5,7 +5,9 @@ class Config:
 
     BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
-    SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL", "sqlite:///news_kz.db")
+    DB_URL = os.environ.get("DATABASE_URL")
+
+    SQLALCHEMY_DATABASE_URI = DB_URL if DB_URL else "sqlite:///news_kz.db"
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
