@@ -173,16 +173,21 @@ def news_delete(news_id):
 
 
 # ================= RSS =================
+import threading
+from rss_parser import fetch_rss_feeds
+
 @admin_bp.route('/news/fetch_rss')
 @login_required
 def news_fetch_rss():
-    from rss_parser import fetch_rss_feeds
 
     try:
-        fetch_rss_feeds()
-        flash('RSS ленты успешно обновлены!', 'success')
+        thread = threading.Thread(target=fetch_rss_feeds)
+        thread.start()
+
+        flash('RSS запущен в фоне (сайт не зависает)', 'success')
+
     except Exception as e:
-        flash(f'Ошибка при обновлении RSS: {e}', 'error')
+        flash(f'Ошибка при запуске RSS: {e}', 'error')
 
     return redirect(url_for('admin.news_list'))
 
