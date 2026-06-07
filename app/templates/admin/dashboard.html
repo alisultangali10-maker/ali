@@ -152,37 +152,3 @@
 </div>
 
 {% endblock %}
-</style>
-
-<div class="admin-header">
-    <h1>Дашборд</h1>
-</div>
-
-<div class="dashboard-cards">
-
-    <div class="dashboard-card" style="background:#000;color:white;">
-        <h3>Всего новостей</h3>
-        <p>{{ total_news }}</p>
-    </div>
-
-    <div class="dashboard-card" style="background:#FFC82E;color:#333;">
-        <h3>Просмотры</h3>
-        <p>{{ total_views }}</p>
-    </div>
-
-    <div class="dashboard-card" style="background:#4b4b4b;color:white;">
-        <h3>Категории</h3>
-        <p>{{ categories_count }}</p>
-    </div>
-
-</div>
-
-<div style="margin-top:3rem;">
-    <h3>Быстрые действия</h3>
-
-    <a href="{{ url_for('admin.news_add') }}" class="quick-action">
-        + Добавить новость
-    </a>
-</div>
-
-{% endblock %}
