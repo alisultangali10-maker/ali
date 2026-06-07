@@ -3,53 +3,58 @@
 {% block content %}
 
 <style>
-/* ===== MODERN DASHBOARD STYLE (ONLY CSS) ===== */
+{% extends "admin/base.html" %}
+
+{% block content %}
+
+<style>
+/* ===== DASHBOARD (WHITE + BLUE GLASS STYLE) ===== */
 
 .dashboard-cards {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 20px;
+    gap: 22px;
 }
 
-/* CARD GLASS STYLE */
+/* GLASS CARD */
 .dashboard-card {
-    background: rgba(255, 255, 255, 0.7);
+    background: rgba(255, 255, 255, 0.65);
     backdrop-filter: blur(18px);
     -webkit-backdrop-filter: blur(18px);
 
     border: 1px solid rgba(30, 94, 255, 0.12);
     border-radius: 18px;
 
-    padding: 25px;
+    padding: 28px;
     text-align: center;
 
-    box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
 
     transition: all 0.3s ease;
     position: relative;
     overflow: hidden;
 }
 
-/* LIGHT BLUE GLOW */
+/* soft blue glow */
 .dashboard-card::before {
     content: '';
     position: absolute;
-    top: -40px;
-    right: -40px;
-    width: 140px;
-    height: 140px;
+    top: -50px;
+    right: -50px;
+    width: 160px;
+    height: 160px;
     background: radial-gradient(circle, rgba(30,94,255,0.25), transparent 70%);
-    filter: blur(15px);
+    filter: blur(20px);
 }
 
-/* HOVER EFFECT */
+/* hover */
 .dashboard-card:hover {
     transform: translateY(-6px);
-    box-shadow: 0 20px 50px rgba(0,0,0,0.12);
+    box-shadow: 0 20px 50px rgba(15, 23, 42, 0.12);
     border-color: rgba(30,94,255,0.3);
 }
 
-/* TITLE */
+/* title */
 .dashboard-card h3 {
     font-size: 13px;
     font-weight: 700;
@@ -58,26 +63,36 @@
     letter-spacing: 1px;
 }
 
-/* NUMBER */
+/* number */
 .dashboard-card p {
-    font-size: 42px;
+    font-size: 44px;
     font-weight: 900;
     color: #0f172a;
-    margin-top: 10px;
+    margin-top: 12px;
 }
 
-/* HEADER */
+/* header */
 .admin-header h1 {
     font-size: 28px;
     font-weight: 900;
     color: #0f172a;
 }
 
-/* QUICK BUTTON */
+/* QUICK ACTIONS */
+.quick-actions {
+    margin-top: 3rem;
+}
+
+.quick-actions h3 {
+    font-size: 16px;
+    font-weight: 800;
+    color: #0f172a;
+    margin-bottom: 14px;
+}
+
+/* BUTTON */
 .quick-action {
     display: inline-block;
-    margin-top: 20px;
-
     padding: 12px 18px;
     border-radius: 12px;
 
@@ -93,15 +108,50 @@
 }
 
 .quick-action:hover {
-    transform: scale(1.05);
+    transform: translateY(-3px) scale(1.03);
+    box-shadow: 0 15px 35px rgba(30,94,255,0.35);
 }
 
 /* RESPONSIVE */
 @media (max-width: 768px) {
     .dashboard-card p {
-        font-size: 30px;
+        font-size: 32px;
     }
 }
+</style>
+
+<div class="admin-header">
+    <h1>Дашборд</h1>
+</div>
+
+<div class="dashboard-cards">
+
+    <div class="dashboard-card">
+        <h3>Всего новостей</h3>
+        <p>{{ total_news }}</p>
+    </div>
+
+    <div class="dashboard-card">
+        <h3>Просмотры</h3>
+        <p>{{ total_views }}</p>
+    </div>
+
+    <div class="dashboard-card">
+        <h3>Категории</h3>
+        <p>{{ categories_count }}</p>
+    </div>
+
+</div>
+
+<div class="quick-actions">
+    <h3>Быстрые действия</h3>
+
+    <a href="{{ url_for('admin.news_add') }}" class="quick-action">
+        + Добавить новость
+    </a>
+</div>
+
+{% endblock %}
 </style>
 
 <div class="admin-header">
