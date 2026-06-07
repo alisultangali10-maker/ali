@@ -3,11 +3,6 @@
 {% block content %}
 
 <style>
-{% extends "admin/base.html" %}
-
-{% block content %}
-
-<style>
 /* ===== DASHBOARD (WHITE + BLUE GLASS STYLE) ===== */
 
 .dashboard-cards {
@@ -35,7 +30,6 @@
     overflow: hidden;
 }
 
-/* soft blue glow */
 .dashboard-card::before {
     content: '';
     position: absolute;
@@ -47,23 +41,19 @@
     filter: blur(20px);
 }
 
-/* hover */
 .dashboard-card:hover {
     transform: translateY(-6px);
     box-shadow: 0 20px 50px rgba(15, 23, 42, 0.12);
     border-color: rgba(30,94,255,0.3);
 }
 
-/* title */
 .dashboard-card h3 {
     font-size: 13px;
     font-weight: 700;
     color: #64748b;
     text-transform: uppercase;
-    letter-spacing: 1px;
 }
 
-/* number */
 .dashboard-card p {
     font-size: 44px;
     font-weight: 900;
@@ -71,7 +61,7 @@
     margin-top: 12px;
 }
 
-/* header */
+/* HEADER */
 .admin-header h1 {
     font-size: 28px;
     font-weight: 900;
@@ -90,7 +80,6 @@
     margin-bottom: 14px;
 }
 
-/* BUTTON */
 .quick-action {
     display: inline-block;
     padding: 12px 18px;
@@ -109,14 +98,6 @@
 
 .quick-action:hover {
     transform: translateY(-3px) scale(1.03);
-    box-shadow: 0 15px 35px rgba(30,94,255,0.35);
-}
-
-/* RESPONSIVE */
-@media (max-width: 768px) {
-    .dashboard-card p {
-        font-size: 32px;
-    }
 }
 </style>
 
