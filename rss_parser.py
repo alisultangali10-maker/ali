@@ -220,7 +220,10 @@ def extract_full_content(url, source_name):
 
             content = content_div.get_text(separator="\n", strip=True)
 
+        print("FINAL IMAGE URL =", image_url)
+        
         return content, image_url
+    
 
     except Exception as e:
         print("[SCRAPER ERROR]", e)
