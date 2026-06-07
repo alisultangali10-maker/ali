@@ -221,6 +221,7 @@ def extract_full_content(url, source_name):
             content = content_div.get_text(separator="\n", strip=True)
 
         print("FINAL IMAGE URL =", image_url)
+        print("SOURCE =", source_name)
         
         return content, image_url
     
