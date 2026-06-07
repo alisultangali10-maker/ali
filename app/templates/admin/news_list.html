@@ -2,111 +2,190 @@
 
 {% block content %}
 
-<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-    
-    <h1 style="color:#FFC82E;">Новости</h1>
-    <a href="{{ url_for('admin.news_add') }}"
-       style="
-            background:#FFC82E;
-            color:#000;
-            padding:10px 15px;
-            border-radius:6px;
-            text-decoration:none;
-            font-weight:bold;
-       ">
-        ➕ Добавить
-    </a>
-    
-<a href="{{ url_for('admin.news_fetch_rss') }}"
-   style="
-        background:#00c853;
-        color:#000;
-        padding:10px 15px;
-        border-radius:6px;
-        text-decoration:none;
-        font-weight:bold;
-        margin-left:10px;
-   ">
-    🔄 Обновить RSS
-</a>
+<style>
+/* ===== NEWS PAGE MODERN STYLE ===== */
+
+.news-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.news-header h1 {
+    font-size: 28px;
+    font-weight: 900;
+    color: #0f172a;
+}
+
+/* BUTTONS */
+.btn-primary {
+    background: linear-gradient(135deg, #1e5eff, #4f86ff);
+    color: white;
+    padding: 10px 16px;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 700;
+    box-shadow: 0 10px 25px rgba(30,94,255,0.25);
+    transition: 0.25s;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+}
+
+.btn-green {
+    background: linear-gradient(135deg, #00c853, #00e676);
+    color: #fff;
+    padding: 10px 16px;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 700;
+    margin-left: 10px;
+    box-shadow: 0 10px 25px rgba(0,200,83,0.2);
+    transition: 0.25s;
+}
+
+.btn-green:hover {
+    transform: translateY(-2px);
+}
+
+/* TABLE WRAPPER */
+.table-wrap {
+    background: rgba(255,255,255,0.7);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(30,94,255,0.1);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(15,23,42,0.08);
+}
+
+/* TABLE */
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th {
+    background: #eef4ff;
+    color: #1e5eff;
+    padding: 14px;
+    text-align: left;
+    font-size: 13px;
+    font-weight: 800;
+}
+
+td {
+    padding: 14px;
+    border-top: 1px solid rgba(0,0,0,0.05);
+    color: #0f172a;
+    font-size: 14px;
+}
+
+/* ROW HOVER */
+tr:hover {
+    background: #f5f8ff;
+}
+
+/* IMAGE */
+td img {
+    border-radius: 10px;
+    width: 90px;
+    height: 60px;
+    object-fit: cover;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+/* ACTION ICONS */
+.action {
+    font-size: 18px;
+    margin-right: 10px;
+    text-decoration: none;
+    transition: 0.2s;
+}
+
+.action:hover {
+    transform: scale(1.2);
+}
+
+.edit {
+    color: #1e5eff;
+}
+
+.delete {
+    color: #ff3b3b;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+    .news-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    td, th {
+        font-size: 12px;
+    }
+}
+</style>
+
+<div class="news-header">
+    <h1>Новости</h1>
+
+    <div>
+        <a href="{{ url_for('admin.news_add') }}" class="btn-primary">➕ Добавить</a>
+        <a href="{{ url_for('admin.news_fetch_rss') }}" class="btn-green">🔄 RSS</a>
+    </div>
 </div>
 
-<table style="
-    width:100%;
-    border-collapse:collapse;
-    background:#111;
-    color:#fff;
-">
+<div class="table-wrap">
 
-    <tr style="
-        background:#1a1a1a;
-        color:#FFC82E;
-    ">
-        <th style="padding:12px;">ID</th>
-        <th style="padding:12px;">Заголовок</th>
-        <th style="padding:12px;">Категория</th>
-        <th style="padding:12px;">Дата</th>
-        <th style="padding:12px;">Картинка</th>
-        <th style="padding:12px;">Действия</th>
+<table>
+
+    <tr>
+        <th>ID</th>
+        <th>Заголовок</th>
+        <th>Категория</th>
+        <th>Дата</th>
+        <th>Картинка</th>
+        <th>Действия</th>
     </tr>
 
     {% for news in news_items %}
-    <tr style="border-bottom:1px solid #222;">
+    <tr>
 
-        <td style="padding:12px;">
-            {{ news.id }}
-        </td>
+        <td>{{ news.id }}</td>
 
-        <td style="padding:12px;">
-            {{ news.title_ru }}
-        </td>
+        <td>{{ news.title_ru }}</td>
 
-        <td style="padding:12px;">
-            {{ news.category.code if news.category else '' }}
-        </td>
+        <td>{{ news.category.code if news.category else '' }}</td>
 
-        <td style="padding:12px;">
+        <td>
             {{ news.created_at.strftime('%d.%m.%Y') if news.created_at else '' }}
         </td>
-        <td style="padding:12px;">
+
+        <td>
             {% if news.image_filename %}
-                <img src="{{ url_for('static', filename='images/uploads/' ~ news.image_filename) }}" width="100">
+                <img src="{{ url_for('static', filename='images/uploads/' ~ news.image_filename) }}">
             {% else %}
-                <img src="{{ url_for('static', filename='images/default.jpg') }}" width="100">
+                <img src="{{ url_for('static', filename='images/default.jpg') }}">
             {% endif %}
-        
         </td>
 
-        <td style="padding:12px;">
+        <td>
+            <a class="action edit"
+               href="{{ url_for('admin.news_edit', news_id=news.id) }}">✏</a>
 
-            <!-- EDIT -->
-
-            <a href="{{ url_for('admin.news_edit', news_id=news.id) }}"
-               style="
-                    color:#FFC82E;
-                    text-decoration:none;
-                    margin-right:15px;
-                    font-size:20px;
-               ">
-                ✏
-            </a>
-
-            <!-- DELETE -->
-
-            <a href="{{ url_for('admin.news_delete', news_id=news.id) }}"
-               style="
-                    color:#ff3b3b;
-                    text-decoration:none;
-                    font-size:20px;
-               ">
-                🗑
-            </a>
-
+            <a class="action delete"
+               href="{{ url_for('admin.news_delete', news_id=news.id) }}">🗑</a>
         </td>
 
     </tr>
     {% endfor %}
 
 </table>
+
+</div>
 
 {% endblock %}
