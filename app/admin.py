@@ -200,3 +200,62 @@ def news_fetch_rss():
 def database():
     news = News.query.order_by(News.id.desc()).limit(100).all()
     return render_template('admin/database.html', news=news)
+
+@admin_bp.route('/news/add-url', methods=['GET', 'POST'])
+@login_required
+def news_add_url():
+
+    categories = Category.query.all()
+
+    if request.method == 'POST':
+
+        article_url = request.form.get('url')
+
+        try:
+            headers = {
+                "User-Agent": "Mozilla/5.0"
+            }
+
+            response = requests.get(article_url, headers=headers, timeout=15)
+
+            soup = BeautifulSoup(response.text, "html.parser")
+
+            title = soup.title.text.strip() if soup.title else "Без заголовка"
+
+            text = ""
+
+            paragraphs = soup.find_all("p")
+
+            for p in paragraphs:
+                text += p.get_text(strip=True) + "\n"
+
+            if len(text) < 100:
+                flash("Не удалось получить текст статьи")
+                return redirect(request.url)
+
+            news_item = News(
+                category_id=1,
+                title_ru=title,
+                title_kk=title,
+                title_en=title,
+                content_ru=text,
+                content_kk=text,
+                content_en=text,
+                summary_ru=text[:300],
+                summary_kk=text[:300],
+                summary_en=text[:300],
+                original_url=article_url,
+                source_name="Manual Import"
+            )
+
+            db.session.add(news_item)
+            db.session.commit()
+
+            flash("Новость успешно импортирована")
+
+            return redirect(url_for('admin.news_list'))
+
+        except Exception as e:
+            flash(f"Ошибка: {e}")
+
+    return render_template("admin/news_import_url.html")
