@@ -133,21 +133,23 @@ td img {
 <div class="news-header">
     <h1>Новости</h1>
 
-    <div>
+    <div class="news-actions">
+
         <a href="{{ url_for('admin.news_add_url') }}"
-   style="
-        background:#1e5eff;
-        color:white;
-        padding:10px 15px;
-        border-radius:10px;
-        text-decoration:none;
-        font-weight:bold;
-        margin-left:10px;
-   ">
-    🔗 Импорт по ссылке
-</a>
-        <a href="{{ url_for('admin.news_add') }}" class="btn-primary">➕ Добавить</a>
-        <a href="{{ url_for('admin.news_fetch_rss') }}" class="btn-green">🔄 RSS</a>
+           class="btn-import admin-btn">
+            🔗 Импорт по ссылке
+        </a>
+
+        <a href="{{ url_for('admin.news_add') }}"
+           class="btn-primary admin-btn">
+            ➕ Добавить
+        </a>
+
+        <a href="{{ url_for('admin.news_fetch_rss') }}"
+           class="btn-green admin-btn">
+            🔄 RSS
+        </a>
+
     </div>
 </div>
 
