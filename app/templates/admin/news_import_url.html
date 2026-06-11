@@ -1,0 +1,42 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+
+<div class="admin-header">
+    <h1>Импорт новости по ссылке</h1>
+</div>
+
+<form method="POST"
+      style="
+      max-width:700px;
+      background:rgba(255,255,255,.65);
+      backdrop-filter:blur(20px);
+      padding:25px;
+      border-radius:18px;
+      ">
+
+```
+<label>Ссылка на новость</label>
+
+<input
+    type="url"
+    name="url"
+    required
+    placeholder="https://site.com/news/123"
+    style="
+    width:100%;
+    padding:14px;
+    margin-top:10px;
+    border-radius:12px;
+    border:1px solid #dbeafe;
+    margin-bottom:20px;
+    ">
+
+<button type="submit" class="quick-action">
+    Импортировать
+</button>
+```
+
+</form>
+
+{% endblock %}
