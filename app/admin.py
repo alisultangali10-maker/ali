@@ -8,7 +8,7 @@ import os
 import uuid
 from werkzeug.utils import secure_filename
 from flask import redirect, url_for
-from rss_parser import fetch_rss_feeds
+from rss_parser import fetch_rss_feeds, download_image
 
 admin_bp = Blueprint('admin', __name__)
 
