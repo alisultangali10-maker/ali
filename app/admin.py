@@ -229,6 +229,20 @@ def news_add_url():
             for p in paragraphs:
                 text += p.get_text(strip=True) + "\n"
 
+            image_url = None
+            local_img = None
+
+            # попытка взять картинку из og:image
+            soup_img = soup.find("meta", property="og:image")
+            if soup_img:
+                image_url = soup_img.get("content")
+
+            if image_url:
+                local_img = download_image(
+                    image_url,
+                    current_app.config['UPLOAD_FOLDER']
+                )
+
             if len(text) < 100:
                 flash("Не удалось получить текст статьи")
                 return redirect(request.url)
@@ -245,6 +259,7 @@ def news_add_url():
                 summary_kk=text[:300],
                 summary_en=text[:300],
                 original_url=article_url,
+                image_filename=local_img,
                 source_name="Manual Import"
             )
 
