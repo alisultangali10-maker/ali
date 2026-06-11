@@ -1581,3 +1581,47 @@ body {
         background .35s ease,
         border-color .35s ease !important;
 }
+
+/* ===== ADMIN BUTTONS ===== */
+
+.admin-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+/* общие кнопки */
+.admin-btn {
+    padding: 10px 15px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: 0.25s;
+    display: inline-block;
+}
+
+/* синяя (добавить) */
+.btn-primary {
+    background: linear-gradient(135deg, #1e5eff, #4f86ff);
+    color: white;
+    box-shadow: 0 10px 25px rgba(30,94,255,0.25);
+}
+
+/* зелёная (rss) */
+.btn-green {
+    background: linear-gradient(135deg, #00c853, #00e676);
+    color: white;
+    box-shadow: 0 10px 25px rgba(0,200,83,0.2);
+}
+
+/* импорт */
+.btn-import {
+    background: #1e5eff;
+    color: white;
+}
+
+/* hover эффект для всех */
+.admin-btn:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.1);
+}
